@@ -17,6 +17,11 @@ def date_check(form, field):
         raise ValidationError('Введите не прошедшую дату')
 
 
+def birthday_check(form, field):
+    if field.data > date.fromisoformat('2000-01-01') or field.data < date.fromisoformat('1900-01-01'):
+        raise ValidationError('Введите дату рождения от 1900 до 2000 года')
+
+
 class LoginForm(FlaskForm):
     login = StringField('Логин', [rus_input_required, rus_length])
     password = PasswordField('Пароль', [rus_input_required, rus_length])
@@ -27,7 +32,7 @@ class UserForm(FlaskForm):
     username = StringField('Имя пользователя', [rus_input_required, rus_length])
     password = PasswordField('Пароль', [rus_input_required, rus_length])
     fio = StringField('ФИО', [rus_input_required, rus_length])
-    birthday = DateField('Дата рождения', [rus_input_required])
+    birthday = DateField('Дата рождения', [rus_input_required, birthday_check])
     address = StringField('Адрес проживания', [rus_input_required, rus_length])
     phone = DecimalField('Номер телефона', [rus_input_required, rus_number_range])
     role_id = SelectField('Роль', [rus_input_required])
