@@ -196,8 +196,10 @@ def route_change(id):
     if session.get('role') == repo.ROLE_ADMINISTRATOR:
         form = forms.ChangeRouteForm()
         if form.validate_on_submit():
-            repo.change_route(id, form.data)
-            flash('Данные изменены', 'info')
+            if not repo.change_route(id, form.data):
+                flash('Введите уникальный номер', 'warning')
+            else:
+                flash('Данные изменены', 'info')
             return redirect(url_for('route', id=id))
     flash('Доступа нет', 'warning')
     return redirect(url_for('routes'))
