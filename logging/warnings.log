@@ -118,3 +118,9 @@
 2022-12-13 22:29:09,590 - werkzeug - WARNING -  * Debugger is active!
 2022-12-13 22:30:04,975 - werkzeug - WARNING -  * Debugger is active!
 2022-12-13 22:31:43,765 - werkzeug - WARNING -  * Debugger is active!
+2022-12-13 22:43:56,759 - werkzeug - WARNING -  * Debugger is active!
+2022-12-13 22:44:02,003 - __init__ - WARNING - new route was added by root
+2022-12-13 22:48:08,002 - werkzeug - WARNING -  * Debugger is active!
+2022-12-13 22:48:37,914 - werkzeug - WARNING -  * Debugger is active!
+2022-12-13 22:48:50,066 - __init__ - WARNING - new route was added by root
+2022-12-13 22:49:16,113 - werkzeug - WARNING -  * Debugger is active!

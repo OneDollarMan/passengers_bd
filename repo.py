@@ -273,7 +273,7 @@ class Repo:
 
     def change_route(self, id, params):
         if params['number'] is not None:
-            if not self.get_query(f"SELECT * FROM route WHERE number='{params['number']}'"):
+            if self.get_query(f"SELECT * FROM route WHERE number='{params['number']}'"):
                 return False
             self.write_query(f"UPDATE route SET number='{params['number']}' WHERE id='{id}'")
         if params['length'] is not None:
