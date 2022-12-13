@@ -6,23 +6,24 @@ from __init__ import app
 import forms
 from repo import *
 
+# Создание объекта репозитория
 repo = Repo(host=app.config['HOST'], user=app.config['USER'], password=app.config['PASSWORD'], db=app.config['DB'], port=app.config['PORT'])
 
 
-def flash_errors(form):
+def flash_errors(form):  # Вывод ошибок форм
     for field, errors in form.errors.items():
         for error in errors:
             flash(error, 'warning')
 
 
-@app.route("/")
+@app.route("/")  # Главная страница
 def index():
     if not session.get('loggedin'):
         return redirect(url_for('login'))
     return render_template('index.html', title="Главная")
 
 
-@app.route("/login", methods=['GET', 'POST'])
+@app.route("/login", methods=['GET', 'POST'])  # Страница авторизации
 def login():
     if session.get('loggedin'):
         return redirect(url_for('index'))
@@ -41,7 +42,7 @@ def login():
     return render_template('login.html', title='Авторизация', form=form)
 
 
-@app.route('/logout')
+@app.route('/logout')  # Страница логаута
 def logout():
     session.pop('loggedin', None)
     session.pop('id', None)
@@ -50,7 +51,7 @@ def logout():
     return redirect(url_for('index'))
 
 
-@app.route("/users", methods=['GET', 'POST'])
+@app.route("/users", methods=['GET', 'POST'])  # Страница пользователей
 def users():
     form = forms.UserForm()
     form.role_id.choices = repo.get_roles()
@@ -67,7 +68,7 @@ def users():
     return render_template('users.html', title='Пользователи', us=repo.get_all_users(), form=form)
 
 
-@app.route("/users/rm/<int:id>")
+@app.route("/users/rm/<int:id>")  # Страница удаления пользователя
 def rm_user(id):
     if session.get('role') == repo.ROLE_ADMINISTRATOR:
         if id:
@@ -75,7 +76,7 @@ def rm_user(id):
     return redirect(url_for('users'))
 
 
-@app.route('/users/<int:id>', methods=['GET', 'POST'])
+@app.route('/users/<int:id>', methods=['GET', 'POST'])  # Страница конкретного пользователя
 def user(id):
     if session.get('role') == repo.ROLE_ADMINISTRATOR or id == session.get('id'):
         form = forms.ChangeUserForm()
@@ -88,7 +89,7 @@ def user(id):
     return redirect(url_for('users'))
 
 
-@app.route("/buses", methods=['GET', 'POST'])
+@app.route("/buses", methods=['GET', 'POST'])  # Страница автобуса
 def buses():
     form = forms.BusForm()
     if form.validate_on_submit():
@@ -102,7 +103,7 @@ def buses():
     return render_template('buses.html', title="Автобусы", buses=repo.get_buses(), form=form)
 
 
-@app.route("/buses/rm/<int:id>")
+@app.route("/buses/rm/<int:id>")  # Страница удаления автобуса
 def rm_buses(id):
     if session.get('role') == repo.ROLE_ADMINISTRATOR:
         if id:
@@ -110,7 +111,7 @@ def rm_buses(id):
     return redirect(url_for("buses"))
 
 
-@app.route('/buses/<int:id>', methods=['GET', 'POST'])
+@app.route('/buses/<int:id>', methods=['GET', 'POST'])  # Страница конкретного автобуса
 def bus(id):
     if session.get('role') == repo.ROLE_ADMINISTRATOR:
         form = forms.ChangeBusForm()
@@ -125,7 +126,7 @@ def bus(id):
     return redirect(url_for('buses'))
 
 
-@app.route("/stops", methods=['GET', 'POST'])
+@app.route("/stops", methods=['GET', 'POST'])  # Страница остановки
 def stops():
     form = forms.StopForm()
     if form.validate_on_submit():
@@ -136,7 +137,7 @@ def stops():
     return render_template('stops.html', title="Остановки", stops=repo.get_stops(), form=form)
 
 
-@app.route('/stops/<int:id>', methods=['GET', 'POST'])
+@app.route('/stops/<int:id>', methods=['GET', 'POST'])  # Страница конкретной остановки
 def stop(id):
     if session.get('role') == repo.ROLE_ADMINISTRATOR:
         form = forms.ChangeStopForm()
@@ -149,7 +150,7 @@ def stop(id):
     return redirect(url_for('stops'))
 
 
-@app.route("/stops/rm/<int:id>", methods=['GET', 'POST'])
+@app.route("/stops/rm/<int:id>", methods=['GET', 'POST'])  # Страница удаления остановки
 def rm_stop(id):
     if session.get('role') >= repo.ROLE_ADMINISTRATOR:
         if id:
@@ -157,7 +158,7 @@ def rm_stop(id):
     return redirect(url_for("stops"))
 
 
-@app.route("/routes", methods=['GET', 'POST'])
+@app.route("/routes", methods=['GET', 'POST'])  # Страница маршрута
 def routes():
     form = forms.RouteForm()
     if form.validate_on_submit():
@@ -171,7 +172,7 @@ def routes():
     return render_template('routes.html', title="Маршруты", routes=repo.get_routes(), form=form)
 
 
-@app.route("/routes/rm/<int:id>")
+@app.route("/routes/rm/<int:id>")  # Страница удаления маршрута
 def rm_route(id):
     if session.get('role') == repo.ROLE_ADMINISTRATOR:
         if id:
@@ -179,7 +180,7 @@ def rm_route(id):
     return redirect(url_for("routes"))
 
 
-@app.route('/routes/<int:id>', methods=['GET', 'POST'])
+@app.route('/routes/<int:id>', methods=['GET', 'POST'])  # Страница конкретного маршрута
 def route(id):
     form = forms.RouteHasStopForm()
     form.stop_id.choices = repo.select_stops_not_in_route(id)
@@ -191,7 +192,7 @@ def route(id):
         return render_template('route.html', title='Маршрут', route=repo.get_route(id), stops=repo.get_stops_of_route(id), form=form, change_form=change_form)
 
 
-@app.route('/routes/<int:id>/change', methods=['POST'])
+@app.route('/routes/<int:id>/change', methods=['POST'])  # Страница изменения маршрута
 def route_change(id):
     if session.get('role') == repo.ROLE_ADMINISTRATOR:
         form = forms.ChangeRouteForm()
@@ -205,13 +206,13 @@ def route_change(id):
     return redirect(url_for('routes'))
 
 
-@app.route('/routes/<int:route_id>/rm/<int:stop_id>')
+@app.route('/routes/<int:route_id>/rm/<int:stop_id>')  # Страница удаления остановки из маршрута
 def rm_stop_from_route(route_id, stop_id):
     repo.rm_stop_from_route(route_id, stop_id)
     return redirect(url_for('route', id=route_id))
 
 
-@app.route('/lists', methods=['GET', 'POST'])
+@app.route('/lists', methods=['GET', 'POST'])  # Страница маршрутного листа
 def lists():
     form = forms.ListForm()
     form.route_id.choices = repo.select_routes()
@@ -228,7 +229,7 @@ def lists():
     return render_template('lists.html', title='Маршрутные листы', lists=repo.get_lists(), form=form, filter_form=filter_form)
 
 
-@app.route('/lists/add', methods=['POST'])
+@app.route('/lists/add', methods=['POST'])  # Страница добавления маршрутного листа
 def add_list():
     form = forms.ListForm()
     form.route_id.choices = repo.select_routes()
@@ -247,7 +248,7 @@ def add_list():
     return redirect(url_for('lists'))
 
 
-@app.route('/lists/<int:id>', methods=['GET', 'POST'])
+@app.route('/lists/<int:id>', methods=['GET', 'POST'])  # Страница конкретного листа
 def lists_id(id):
     list = repo.get_list(id)
     if session.get('id') == list[7] or session.get('role') >= repo.ROLE_ENGINEER:
@@ -268,7 +269,7 @@ def lists_id(id):
         return redirect(url_for('lists'))
 
 
-@app.route('/lists/<int:id>/add', methods=['POST'])
+@app.route('/lists/<int:id>/add', methods=['POST'])  # Страница добавления рейса в лист
 def add_flight(id):
     flight_form = forms.FlightForm()
     if flight_form.validate_on_submit():
@@ -280,7 +281,7 @@ def add_flight(id):
     return redirect(url_for('lists_id', id=id))
 
 
-@app.route('/lists/<int:id>/change', methods=['POST'])
+@app.route('/lists/<int:id>/change', methods=['POST'])  # Страница изменения рейса в листе
 def flight_change(id):
     form = forms.ChangeFlightForm()
     form.flight_id.choices = repo.select_flights_of_list(id)
@@ -290,13 +291,13 @@ def flight_change(id):
         return redirect(url_for('lists_id', id=id))
 
 
-@app.route('/lists/<int:id>/rm/<int:flight_id>')
+@app.route('/lists/<int:id>/rm/<int:flight_id>')  # Страница удаления рейса из листа
 def rm_flight(id, flight_id):
     repo.rm_flight(flight_id)
     return redirect(url_for('lists_id', id=id))
 
 
-@app.route("/lists/rm/<int:id>")
+@app.route("/lists/rm/<int:id>")  # Страница удаления листа
 def rm_list(id):
     if session.get('role') == repo.ROLE_ADMINISTRATOR:
         if id:
@@ -304,16 +305,17 @@ def rm_list(id):
     return redirect(url_for("lists"))
 
 
-@app.route('/flights_stat')
+@app.route('/flights_stat')  # Страница со статистикой для графика
 def stat():
     return repo.get_flights_stat()
 
 
-@app.route('/stat')
+@app.route('/stat')  # Страница со статистикой обычная
 def driver_stat():
     return render_template('stat.html', title='Статистика', driver_stat=repo.get_driver_stat(), bus_stat=repo.get_bus_stat(), route_stat=repo.get_route_stat())
 
 
+# Вывод статических ресурсов
 @app.route('/robots.txt')
 @app.route('/sitemap.xml')
 @app.route('/favicon.ico')
@@ -324,6 +326,7 @@ def static_from_root():
     return send_from_directory(app.static_folder, request.path[1:])
 
 
+# Обработка ошибки 404
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('404.html'), 404

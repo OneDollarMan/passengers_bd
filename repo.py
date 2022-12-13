@@ -3,8 +3,9 @@ from datetime import time
 from mysql.connector import connect, Error
 
 
+# Класс репозитория, общающийся с БД
 class Repo:
-    ROLE_DRIVER = 1
+    ROLE_DRIVER = 1  # Переменные ролей
     ROLE_ENGINEER = 2
     ROLE_ADMINISTRATOR = 3
 
@@ -15,7 +16,7 @@ class Repo:
         if self.connection is not None and self.cursor is not None:
             self.select_db(db)
             self.get_tables = lambda: self.raw_query("SHOW TABLES")
-
+            # Запросы к пользователям
             self.get_user = lambda username: self.get_query(
                 f"SELECT * FROM user WHERE username='{username}'")
             self.get_all_users = lambda: self.raw_query(
@@ -28,28 +29,29 @@ class Repo:
             self.rm_user = lambda id: self.write_query(f"DELETE FROM user WHERE id='{id}'")
             self.select_users = lambda: self.raw_query("SELECT id, fio FROM user WHERE role_id='1' AND hidden='0'")
             self.hide_user = lambda id: self.write_query(f"UPDATE user SET hidden='1' WHERE id='{id}'")
-            self.get_user_by_id = lambda id: self.get_query(f"SELECT user.id, username, fio, birthday, address, phone, role.name FROM user JOIN role ON user.role_id=role.id WHERE hidden='0' AND user.id='{id}'")
-
+            self.get_user_by_id = lambda id: self.get_query(
+                f"SELECT user.id, username, fio, birthday, address, phone, role.name FROM user JOIN role ON user.role_id=role.id WHERE hidden='0' AND user.id='{id}'")
+            # Запросы к ролям
             self.get_roles = lambda: self.raw_query("SELECT * from role")
-
+            # Запросы к автобусам
             self.get_buses = lambda: self.raw_query("SELECT * FROM bus WHERE hidden='0'")
             self.add_bus = lambda params: self.write_query(
                 "INSERT INTO bus SET brand=%(brand)s, model=%(model)s, plate=%(plate)s, year=%(year)s, mileage=%(mileage)s",
                 params)
             self.rm_bus = lambda id: self.write_query(f"DELETE FROM bus WHERE id='{id}'")
-            self.select_buses = lambda: self.raw_query("SELECT id, CONCAT(brand, ' ', model, ' ', plate) FROM bus WHERE hidden='0'")
+            self.select_buses = lambda: self.raw_query(
+                "SELECT id, CONCAT(brand, ' ', model, ' ', plate) FROM bus WHERE hidden='0'")
             self.get_bus_by_id = lambda id: self.get_query(f"SELECT * FROM bus WHERE id='{id}'")
             self.hide_bus = lambda id: self.write_query(f"UPDATE bus SET hidden='1' WHERE id='{id}'")
-
+            # Запросы к остановкам
             self.get_stops = lambda: self.raw_query("SELECT * FROM stop")
-            self.add_stop = lambda params: self.write_query("INSERT INTO stop SET name=%(name)s, address=%(address)s",
-                                                            params)
+            self.add_stop = lambda params: self.write_query("INSERT INTO stop SET name=%(name)s, address=%(address)s",params)
             self.rm_stop = lambda id: self.write_query(f"DELETE FROM stop WHERE id='{id}'")
             self.select_stops = lambda: self.raw_query("SELECT id, name FROM stop")
             self.select_stops_not_in_route = lambda route_id: self.raw_query(
                 f"SELECT id, name FROM stop WHERE id NOT IN (SELECT stop_id FROM route_has_stop WHERE route_id='{route_id}')")
             self.get_stop_by_id = lambda id: self.get_query(f"SELECT * FROM stop WHERE id='{id}'")
-
+            # Запросы к маршрутам
             self.get_routes = lambda: self.raw_query("SELECT * FROM route WHERE hidden='0'")
             self.get_route = lambda id: self.get_query(f"SELECT * FROM route WHERE id='{id}'")
             self.add_route = lambda params: self.write_query(
@@ -57,7 +59,7 @@ class Repo:
             self.rm_route = lambda id: self.write_query(f"DELETE FROM route WHERE id='{id}'")
             self.select_routes = lambda: self.raw_query("SELECT id, number FROM route WHERE hidden='0'")
             self.hide_route = lambda id: self.write_query(f"UPDATE route SET hidden='1' WHERE id='{id}'")
-
+            # Запросы к остановкам в маршрутах
             self.add_stop_to_route = lambda stop_id, route_id: self.write_query(
                 f"INSERT INTO route_has_stop SET stop_id='{stop_id}', route_id='{route_id}'")
             self.get_stops_of_route = lambda route_id: self.raw_query(
@@ -68,7 +70,7 @@ class Repo:
                 f"DELETE FROM route_has_stop WHERE route_id='{id}'")
             self.remove_stop_from_route_has_stops = lambda id: self.write_query(
                 f"DELETE FROM route_has_stop WHERE stop_id='{id}'")
-
+            # Запросы к маршрутным листам
             self.get_lists = lambda: self.raw_query(
                 "SELECT l.id, date, number, CONCAT(brand, ' ', model, ' ', plate) bus, fio, name FROM list l JOIN route r, bus b, user u, status s WHERE l.route_id=r.id AND l.bus_id=b.id AND l.driver_id=u.id AND l.status_id=s.id ORDER BY date")
             self.add_list = lambda params: self.write_query(
@@ -82,23 +84,27 @@ class Repo:
             self.remove_route_lists = lambda id: self.write_query(f"DELETE FROM list WHERE route_id='{id}'")
             self.get_lists_of_bus = lambda id: self.raw_query(f"SELECT * FROM list WHERE bus_id='{id}'")
             self.get_lists_of_user = lambda id: self.raw_query(f"SELECT * FROM list WHERE driver_id='{id}'")
-
+            # Запросы к рейсам
             self.get_fligts_of_list = lambda list_id: self.raw_query(f"SELECT * FROM flight WHERE list_id='{list_id}'")
             self.add_flight = lambda start_time, end_time, list_id: self.write_query(
                 f"INSERT INTO flight SET start_time='{start_time}', end_time='{end_time}', list_id='{list_id}'")
             self.rm_flight = lambda id: self.write_query(f"DELETE FROM flight WHERE id='{id}'")
             self.remove_list_flights = lambda id: self.write_query(f"DELETE FROM flight WHERE list_id='{id}'")
-            self.select_flights_of_list = lambda id: self.raw_query(f"SELECT id, CONCAT(start_time, ' - ', end_time) FROM flight WHERE list_id='{id}'")
-
+            self.select_flights_of_list = lambda id: self.raw_query(
+                f"SELECT id, CONCAT(start_time, ' - ', end_time) FROM flight WHERE list_id='{id}'")
+            # Запросы к статусам
             self.select_statuses = lambda: self.raw_query("SELECT id, name FROM status")
-
+            # Запросы статистики
             self.get_flights_stat = lambda: self.raw_query(
                 "SELECT date, COUNT(*) FROM flight f JOIN list l ON f.list_id=l.id WHERE MONTH(date)=MONTH(now()) GROUP BY YEAR(date), MONTH(date), DAY(date)")
-            self.get_driver_stat = lambda: self.raw_query("SELECT u.id, fio, COUNT(*) FROM flight f JOIN list l , user u WHERE f.list_id=l.id AND l.driver_id=u.id AND MONTH(l.date)=MONTH(NOW()) GROUP BY driver_id")
-            self.get_bus_stat = lambda: self.raw_query("SELECT b.id, CONCAT(brand, ' ', model, ' ', plate), COUNT(*) FROM flight f JOIN list l , bus b WHERE f.list_id=l.id AND l.bus_id=b.id AND MONTH(l.date)=MONTH(NOW()) GROUP BY bus_id")
-            self.get_route_stat = lambda: self.raw_query("SELECT r.id, r.number, COUNT(*) FROM flight f JOIN list l , route r WHERE f.list_id=l.id AND l.route_id=r.id AND MONTH(l.date)=MONTH(NOW()) GROUP BY route_id")
+            self.get_driver_stat = lambda: self.raw_query(
+                "SELECT u.id, fio, COUNT(*) FROM flight f JOIN list l , user u WHERE f.list_id=l.id AND l.driver_id=u.id AND MONTH(l.date)=MONTH(NOW()) GROUP BY driver_id")
+            self.get_bus_stat = lambda: self.raw_query(
+                "SELECT b.id, CONCAT(brand, ' ', model, ' ', plate), COUNT(*) FROM flight f JOIN list l , bus b WHERE f.list_id=l.id AND l.bus_id=b.id AND MONTH(l.date)=MONTH(NOW()) GROUP BY bus_id")
+            self.get_route_stat = lambda: self.raw_query(
+                "SELECT r.id, r.number, COUNT(*) FROM flight f JOIN list l , route r WHERE f.list_id=l.id AND l.route_id=r.id AND MONTH(l.date)=MONTH(NOW()) GROUP BY route_id")
 
-    def connect_to_db(self, host, user, password, db, port):
+    def connect_to_db(self, host, user, password, db, port):  # Функция подключения к БД
         try:
             self.connection = connect(host=host, user=user, password=password, port=port)
             self.cursor = self.connection.cursor()
@@ -117,7 +123,7 @@ class Repo:
     def select_db(self, db):
         self.cursor.execute(f"USE {db}")
 
-    def raw_query(self, query, params=None):
+    def raw_query(self, query, params=None):  # Функция, отправляющая запрос к БД
         if self.cursor and query:
             if params:
                 self.cursor.execute(query, params)
@@ -125,7 +131,7 @@ class Repo:
                 self.cursor.execute(query)
             return self.cursor.fetchall()
 
-    def write_query(self, query, params=None):
+    def write_query(self, query, params=None):  # Тоже
         if self.cursor and query:
             if params:
                 self.cursor.execute(query, params)
@@ -134,39 +140,36 @@ class Repo:
             self.connection.commit()
             return self.cursor.fetchall()
 
-    def get_query(self, query):
+    def get_query(self, query):  # Тоже
         if self.cursor and query:
             self.cursor.execute(query)
             return self.cursor.fetchone()
 
-    def get_one_query(self, query):
+    def get_one_query(self, query):  # Тоже
         if self.cursor and query:
             self.cursor.execute(query)
             return self.cursor.fetchone()[0]
 
-    def add_user(self, params):
+    def add_user(self, params):  # Добавление юзера с проверкой
         if not self.get_user(params['username']):
             self.add_u(params)
             return True
         else:
             return False
 
-    def add_bus_check(self, params):
+    def add_bus_check(self, params):  # Добавление автобуса с проверкой
         if not self.get_query(f"SELECT * FROM bus WHERE plate='{params['plate']}'"):
             self.add_bus(params)
             return True
         return False
 
-    def add_stop_check(self, params):
-        ...
-
-    def add_route_check(self, params):
+    def add_route_check(self, params):  # Добавление маршрута с проверкой
         if not self.get_query(f"SELECT * FROM route WHERE number='{params['number']}'"):
             self.add_route(params)
             return True
         return False
 
-    def add_flight_check(self, start_date, end_date, list_id):
+    def add_flight_check(self, start_date, end_date, list_id):  # Добавление рейса к листу с проверкой
         times = self.raw_query(f"SELECT end_time FROM flight WHERE list_id='{list_id}'")
         for t in times:
             t = str(t[0])
@@ -176,14 +179,14 @@ class Repo:
         self.add_flight(start_date, end_date, list_id)
         return True
 
-    def add_list_check(self, params):
+    def add_list_check(self, params):  # Добавление листа с проверкой
         if len(self.raw_query(
                 f"SELECT * FROM list WHERE (driver_id='{params['driver_id']}' OR bus_id='{params['bus_id']}') AND date='{params['date']}'")) == 0:
             self.add_list(params)
             return True
         return False
 
-    def get_lists_sorted(self, data):
+    def get_lists_sorted(self, data):  # Вывод отфильтрованных листов
         q = "SELECT l.id, date, number, CONCAT(brand, ' ', model, ' ', plate) bus, fio, name FROM list l JOIN route r, bus b, user u, status s WHERE l.route_id=r.id AND l.bus_id=b.id AND l.driver_id=u.id AND l.status_id=s.id"
         if data['driver_id']:
             q = q + f" AND l.driver_id='{data['driver_id']}'"
@@ -196,50 +199,50 @@ class Repo:
         q = q + ' ORDER BY date'
         return self.raw_query(q)
 
-    def remove_list(self, id):
+    def remove_list(self, id):  # Удаление листа
         self.remove_list_flights(id)
         self.rm_list(id)
 
-    def remove_route(self, id):
+    def remove_route(self, id):  # Удаление маршрута
         self.remove_route_lists(id)
         self.remove_route_has_stops(id)
         self.rm_route(id)
 
-    def remove_stop(self, id):
+    def remove_stop(self, id):  # Удаление остановки
         self.remove_stop_from_route_has_stops(id)
         self.rm_stop(id)
 
-    def remove_bus(self, id):
+    def remove_bus(self, id):  # Удаление автобуса
         lists = self.get_lists_of_bus(id)
         for l in lists:
             self.remove_list(l[0])
         self.rm_bus(id)
 
-    def remove_user(self, id):
+    def remove_user(self, id):  # Удаление юзера
         lists = self.get_lists_of_user(id)
         for l in lists:
             self.remove_list(l[0])
         self.rm_user(id)
 
-    def hide_user_with_lists(self, id):
+    def hide_user_with_lists(self, id):  # Скрытие юзера
         lists = self.raw_query(f"SELECT id FROM list WHERE driver_id='{id}' AND status_id='1'")
         for l in lists:
             self.remove_list(l[0])
         self.hide_user(id)
 
-    def hide_bus_with_lists(self, id):
+    def hide_bus_with_lists(self, id):  # Скрытие автобуса
         lists = self.raw_query(f"SELECT id FROM list WHERE bus_id='{id}' AND status_id='1'")
         for l in lists:
             self.remove_list(l[0])
         self.hide_bus(id)
 
-    def hide_route_with_lists(self, id):
+    def hide_route_with_lists(self, id):  # Скрытие маршрута
         lists = self.raw_query(f"SELECT id FROM list WHERE route_id='{id}' AND status_id='1'")
         for l in lists:
             self.remove_list(l[0])
         self.hide_route(id)
 
-    def change_user(self, id, params):
+    def change_user(self, id, params):  # Изменение юзера
         if params['fio'] != '':
             self.write_query(f"UPDATE user SET fio='{params['fio']}' WHERE id='{id}'")
         if params['birthday'] is not None:
@@ -249,7 +252,7 @@ class Repo:
         if params['phone'] is not None:
             self.write_query(f"UPDATE user SET phone='{params['phone']}' WHERE id='{id}'")
 
-    def change_bus(self, id, params):
+    def change_bus(self, id, params):  # Изменение автобуса
         if params['brand'] != '':
             self.write_query(f"UPDATE bus SET brand='{params['brand']}' WHERE id='{id}'")
         if params['model'] != '':
@@ -265,13 +268,13 @@ class Repo:
             self.write_query(f"UPDATE bus SET mileage='{params['mileage']}' WHERE id='{id}'")
         return True
 
-    def change_stop(self, id, params):
+    def change_stop(self, id, params):  # Изменение остановки
         if params['name'] != '':
             self.write_query(f"UPDATE stop SET name='{params['name']}' WHERE id='{id}'")
         if params['address'] != '':
             self.write_query(f"UPDATE stop SET address='{params['address']}' WHERE id='{id}'")
 
-    def change_route(self, id, params):
+    def change_route(self, id, params):  # Изменение маршрута
         if params['number'] is not None:
             if self.get_query(f"SELECT * FROM route WHERE number='{params['number']}'"):
                 return False
@@ -280,7 +283,7 @@ class Repo:
             self.write_query(f"UPDATE route SET length='{params['length']}' WHERE id='{id}'")
         return True
 
-    def change_flight(self, params):
+    def change_flight(self, params):  # Изменение рейса
         if params['start_time'] is not None:
             self.write_query(f"UPDATE flight SET start_time='{params['start_time']}' WHERE id='{params['flight_id']}'")
         if params['end_time'] is not None:
