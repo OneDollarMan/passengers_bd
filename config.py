@@ -3,6 +3,7 @@ WTF_CSRF_SECRET_KEY = 'you-totally-will-never-guess'
 HOST = 'localhost'
 USER = 'root'
 PASSWORD = 'gmfk2ASD'
+PORT = '3306'
 DB = 'passenger'  # don't change
 
 NAME = 'Пассажироперевозки'

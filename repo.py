@@ -8,10 +8,10 @@ class Repo:
     ROLE_ENGINEER = 2
     ROLE_ADMINISTRATOR = 3
 
-    def __init__(self, host, user, password, db):
+    def __init__(self, host, user, password, db, port):
         self.connection = None
         self.cursor = None
-        self.connect_to_db(host, user, password, db)
+        self.connect_to_db(host, user, password, db, port)
         if self.connection is not None and self.cursor is not None:
             self.select_db(db)
             self.get_tables = lambda: self.raw_query("SHOW TABLES")
@@ -98,9 +98,9 @@ class Repo:
             self.get_bus_stat = lambda: self.raw_query("SELECT b.id, CONCAT(brand, ' ', model, ' ', plate), COUNT(*) FROM flight f JOIN list l , bus b WHERE f.list_id=l.id AND l.bus_id=b.id AND MONTH(l.date)=MONTH(NOW()) GROUP BY bus_id")
             self.get_route_stat = lambda: self.raw_query("SELECT r.id, r.number, COUNT(*) FROM flight f JOIN list l , route r WHERE f.list_id=l.id AND l.route_id=r.id AND MONTH(l.date)=MONTH(NOW()) GROUP BY route_id")
 
-    def connect_to_db(self, host, user, password, db):
+    def connect_to_db(self, host, user, password, db, port):
         try:
-            self.connection = connect(host=host, user=user, password=password)
+            self.connection = connect(host=host, user=user, password=password, port=port)
             self.cursor = self.connection.cursor()
             self.cursor.execute("SHOW DATABASES")
             for res in self.cursor:

@@ -6,7 +6,7 @@ from __init__ import app
 import forms
 from repo import *
 
-repo = Repo(host=app.config['HOST'], user=app.config['USER'], password=app.config['PASSWORD'], db=app.config['DB'])
+repo = Repo(host=app.config['HOST'], user=app.config['USER'], password=app.config['PASSWORD'], db=app.config['DB'], port=app.config['PORT'])
 
 
 def flash_errors(form):
