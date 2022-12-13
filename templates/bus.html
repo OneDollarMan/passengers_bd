@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% import 'bootstrap5/form.html' as wtf %}
+
+{% block app_content %}
+<a href="../buses">
+    <button class="btn btn-primary"> < Назад</button>
+</a>
+<br><br>
+
+<div class="row">
+    <div class="col col-sm-3">
+        <div class="card">
+            <div class="card-header">
+                Информация о автобусе
+            </div>
+            <div class="card-body">
+                {{ macros.info_table(['Производитель', 'Модель', 'Госномер', 'Год выпуска', 'Пробег'], bus) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="col col-sm-2">
+        <div class="card">
+            <div class="card-header">
+                Изменить данные
+            </div>
+            <div class="card-body">
+                {{ wtf.render_form(form, button_style='secondary') }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

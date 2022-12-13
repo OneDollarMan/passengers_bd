@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% import 'bootstrap5/form.html' as wtf %}
+
+{% block app_content %}
+<a href="../routes">
+    <button class="btn btn-primary"> < Назад</button>
+</a>
+<br><br>
+
+<div class="row">
+    <div class="col col-sm-2">
+        <div class="card">
+            <div class="card-header">
+                Информация о маршруте
+            </div>
+            <div class="card-body">
+                {{ macros.info_table(['Номер', 'Длина'], route) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                Остановки
+            </div>
+            <div class="card-body">
+                {{ macros.table('routes/'+route[0]|string, ['Название', 'Адрес'], stops) }}
+            </div>
+        </div>
+    </div>
+
+    {% if session.role == 3 %}
+    <div class="col col-sm-2">
+        <div class="card">
+            <div class="card-header">
+                Добавить остановку
+            </div>
+            <div class="card-body">
+                {{ wtf.render_form(form, button_style='secondary') }}
+            </div>
+        </div>
+        <br>
+        <div class="card">
+            <div class="card-header">
+                Изменить данные
+            </div>
+            <div class="card-body">
+                {{ wtf.render_form(change_form, button_style='secondary', action='/routes/' + route[0]|string + '/change') }}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

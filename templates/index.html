@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block app_content %}
+<div class="row d-flex justify-content-center">
+    <div class="col col-sm-6">
+        <img src="bus.jpg" width="100%">
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('myChart');
+  fetch('/flights_stat')
+  .then((response) => {
+    return response.json();
+  })
+  .then((data) => {
+    let d1 = [];
+    let d2 = [];
+    data.forEach(el => {
+        d1.push(el[0])
+        d2.push(el[1])
+        });
+    new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: d1,
+      datasets: [{
+        label: 'Рейсы',
+        data: d2,
+        borderWidth: 2,
+        borderColor: '#FF6384',
+        backgroundColor: '#FFB1C1',
+        color: 'white'
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      },
+      grid: {
+        color: 'white'
+      }
+    }
+  });
+  });
+
+
+
+</script>
+{% endblock %}
