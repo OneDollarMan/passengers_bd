@@ -162,7 +162,9 @@ def routes():
     form = forms.RouteForm()
     if form.validate_on_submit():
         if session.get('role') == repo.ROLE_ADMINISTRATOR:
-            repo.add_route(form.data)
+            if not repo.add_route_check(form.data):
+                flash('Введите уникальный номер', 'warning')
+                return redirect(url_for('routes'))
             app.logger.warning(f'new route was added by {session.get("username")}')
             return redirect(url_for('routes'))
 

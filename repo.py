@@ -161,7 +161,10 @@ class Repo:
         ...
 
     def add_route_check(self, params):
-        ...
+        if not self.get_query(f"SELECT * FROM route WHERE number='{params['number']}'"):
+            self.add_route(params)
+            return True
+        return False
 
     def add_flight_check(self, start_date, end_date, list_id):
         times = self.raw_query(f"SELECT end_time FROM flight WHERE list_id='{list_id}'")
