@@ -13,8 +13,11 @@ rus_mileage_range = NumberRange(min=1, max=1000000, message='Значение п
 
 
 def date_check(form, field):
-    if field.data < date.today():
-        raise ValidationError('Введите не прошедшую дату')
+    if field is not None:
+        if field.data < date.today():
+            raise ValidationError('Введите не прошедшую дату')
+    else:
+        raise ValidationError('Введите правильную дату')
 
 
 def birthday_check(form, field):
