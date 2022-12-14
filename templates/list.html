@@ -25,7 +25,11 @@
                 Рейсы
             </div>
             <div class="card-body">
-                {{ macros.table('lists/'+list[0]|string, ['Время начала', 'Время конца'], flights)}}
+                {% if list[5] == 'Завершен' %}
+                    {{ macros.table('lists/'+list[0]|string, ['Время начала', 'Время конца'], flights, actions=False)}}
+                {% else %}
+                    {{ macros.table('lists/'+list[0]|string, ['Время начала', 'Время конца'], flights)}}
+                {% endif %}
             </div>
         </div>
     </div>
