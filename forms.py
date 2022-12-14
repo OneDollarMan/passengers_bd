@@ -18,8 +18,11 @@ def date_check(form, field):
 
 
 def birthday_check(form, field):
-    if field.data > date.fromisoformat('2000-01-01') or field.data < date.fromisoformat('1900-01-01'):
-        raise ValidationError('Введите дату рождения от 1900 до 2000 года')
+    if field.data is not None:
+        if field.data > date.fromisoformat('2000-01-01') or field.data < date.fromisoformat('1900-01-01'):
+            raise ValidationError('Введите дату рождения от 1900 до 2000 года')
+    else:
+        raise ValidationError('Введите правильную дату')
 
 
 class LoginForm(FlaskForm):
