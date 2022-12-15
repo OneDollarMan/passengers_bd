@@ -263,7 +263,10 @@ class Repo:
             else:
                 return False
         if params['year'] is not None:
-            self.write_query(f"UPDATE bus SET year='{params['year']}' WHERE id='{id}'")
+            if 2000 <= params['year'] <= 2022:
+                self.write_query(f"UPDATE bus SET year='{params['year']}' WHERE id='{id}'")
+            else:
+                return False
         if params['mileage'] is not None:
             self.write_query(f"UPDATE bus SET mileage='{params['mileage']}' WHERE id='{id}'")
         return True

@@ -116,13 +116,10 @@ def bus(id):
     if session.get('role') == repo.ROLE_ADMINISTRATOR:
         form = forms.ChangeBusForm()
         if form.validate_on_submit():
-            if 2000 <= form.year.data <= 2022:
-                if repo.change_bus(id, form.data):
-                    flash('Данные изменены', 'info')
-                else:
-                    flash('Введите уникальный госномер', 'warning')
+            if repo.change_bus(id, form.data):
+                flash('Данные изменены', 'info')
             else:
-                flash('Введите год выпуска от 2000 до 2022', 'warning')
+                flash('Введите корректные данные', 'warning')
             return redirect(url_for('bus', id=id))
         return render_template('bus.html', title='Автобус', bus=repo.get_bus_by_id(id), form=form)
     flash('Доступа нет', 'warning')
