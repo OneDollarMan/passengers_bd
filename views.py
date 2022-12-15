@@ -220,8 +220,8 @@ def lists():
     form.driver_id.choices = repo.select_users()
 
     filter_form = forms.ListFilterForm()
-    filter_form.driver_id.choices = [("", "---")] + repo.select_users()
-    filter_form.route_id.choices = [("", "---")] + repo.select_routes()
+    filter_form.driver_id.choices = [("", "---")] + repo.select_users_all()
+    filter_form.route_id.choices = [("", "---")] + repo.select_routes_all()
 
     if filter_form.validate_on_submit():
         return render_template('lists.html', title="Маршрутные листы", lists=repo.get_lists_sorted(filter_form.data), form=form, filter_form=filter_form)

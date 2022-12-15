@@ -28,6 +28,7 @@ class Repo:
                 params)
             self.rm_user = lambda id: self.write_query(f"DELETE FROM user WHERE id='{id}'")
             self.select_users = lambda: self.raw_query("SELECT id, fio FROM user WHERE role_id='1' AND hidden='0'")
+            self.select_users_all = lambda: self.raw_query("SELECT id, fio FROM user WHERE role_id='1'")
             self.hide_user = lambda id: self.write_query(f"UPDATE user SET hidden='1' WHERE id='{id}'")
             self.get_user_by_id = lambda id: self.get_query(
                 f"SELECT user.id, username, fio, birthday, address, phone, role.name FROM user JOIN role ON user.role_id=role.id WHERE hidden='0' AND user.id='{id}'")
@@ -58,6 +59,7 @@ class Repo:
                 "INSERT INTO route SET number=%(number)s, length=%(length)s", params)
             self.rm_route = lambda id: self.write_query(f"DELETE FROM route WHERE id='{id}'")
             self.select_routes = lambda: self.raw_query("SELECT id, number FROM route WHERE hidden='0'")
+            self.select_routes_all = lambda: self.raw_query("SELECT id, number FROM route")
             self.hide_route = lambda id: self.write_query(f"UPDATE route SET hidden='1' WHERE id='{id}'")
             # Запросы к остановкам в маршрутах
             self.add_stop_to_route = lambda stop_id, route_id: self.write_query(
